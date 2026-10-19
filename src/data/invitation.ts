@@ -35,7 +35,7 @@ export const INVITATION_INFO: InvitationInfo = {
   },
   mapUrl: 'https://www.google.com/maps/search/?api=1&query=10.856022683794722,106.78555315190036',
   photoUrl: '/images/graduation.png',
-  message: 'trong ngày đặc biệt đánh dấu hành trình học tập, những nỗ lực đã qua và khởi đầu của một chặng đường mới.',
-  quote: 'A milestone worth celebrating',
+  message: 'Thân mời bạn đến chung vui và lưu giữ những khoảnh khắc đáng nhớ trong ngày lễ tốt nghiệp của mình.',
+  quote: 'Lễ tốt nghiệp',
   subQuote: 'Sự hiện diện của bạn là niềm vinh hạnh và hạnh phúc lớn của mình.',
 };

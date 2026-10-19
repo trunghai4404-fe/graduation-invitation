@@ -50,7 +50,7 @@ export default function Invitation() {
       <div className="relative overflow-hidden rounded-xl border border-[#c79c61]/50 bg-[#0d0e14]/92 p-2 sm:p-3 shadow-[0_30px_100px_rgba(0,0,0,0.85)] backdrop-blur-md">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_50%_0%,rgba(216,173,112,0.18),transparent_60%)]" />
 
-        <div className="relative rounded-lg border border-[#c79c61]/30 bg-gradient-to-b from-[#14141c]/90 via-[#0e0f14]/90 to-[#0a0a0e]/95 px-4 py-6 sm:px-8 sm:py-8 md:px-12">
+        <div className="relative rounded-lg border border-[#c79c61]/30 bg-linear-to-b from-[#14141c]/90 via-[#0e0f14]/90 to-[#0a0a0e]/95 px-4 py-6 sm:px-8 sm:py-8 md:px-12">
           <div className="pointer-events-none absolute left-3 top-3 size-4 border-l-2 border-t-2 border-[#d8ad70]/60 sm:left-4 sm:top-4 sm:size-5" />
           <div className="pointer-events-none absolute right-3 top-3 size-4 border-r-2 border-t-2 border-[#d8ad70]/60 sm:right-4 sm:top-4 sm:size-5" />
           <div className="pointer-events-none absolute bottom-3 left-3 size-4 border-b-2 border-l-2 border-[#d8ad70]/60 sm:bottom-4 sm:left-4 sm:size-5" />
@@ -67,7 +67,7 @@ export default function Invitation() {
                 <div className="inline-flex items-center gap-1.5 sm:gap-2 rounded-full border border-[#d8ad70]/50 bg-[#d8ad70]/10 px-2.5 py-0.5 sm:px-3 sm:py-1 text-[#d8ad70] shadow-[0_0_15px_rgba(216,173,112,0.2)]">
                   <GraduationCap size={15} strokeWidth={1.4} />
                   <span className="text-[8px] sm:text-[9px] uppercase tracking-[0.25em] font-semibold text-[#f2d7a8]">
-                    Class of 2026
+                    Thiệp Mời Tốt Nghiệp · 2026
                   </span>
                 </div>
 
@@ -83,21 +83,21 @@ export default function Invitation() {
                 </p>
 
                 <div className="my-3 sm:my-4 flex items-center gap-2">
-                  <span className="h-px w-10 sm:w-16 bg-gradient-to-r from-[#d8ad70]/80 to-transparent" />
+                  <span className="h-px w-10 sm:w-16 bg-linear-to-r from-[#d8ad70]/80 to-transparent" />
                   <Sparkles size={11} className="text-[#d8ad70]" />
                 </div>
 
-                <p className="text-[11px] text-white/60 sm:text-xs">
+                {/* <p className="text-[11px] text-white/60 sm:text-xs">
                   Trân trọng kính mời bạn đến chung vui cùng
-                </p>
+                </p> */}
 
                 <div className="mt-1 flex flex-wrap items-baseline gap-2 sm:gap-3">
-                  <h3 className="font-display gold-text text-2xl font-medium sm:text-4xl md:text-5xl tracking-wide py-1">
-                    {INVITATION_INFO.name}
-                  </h3>
                   <span className="rounded-full border border-[#d8ad70]/60 bg-[#251e15] px-2 py-0.5 text-[8px] sm:text-[9px] uppercase tracking-[0.2em] text-[#f2d7a8]">
                     {INVITATION_INFO.role}
                   </span>
+                  <h3 className="font-display gold-text text-2xl font-medium sm:text-4xl md:text-5xl tracking-wide py-1">
+                    {INVITATION_INFO.name}
+                  </h3>
                 </div>
 
                 <p className="mt-2 max-w-lg text-[11px] leading-relaxed text-white/65 sm:text-xs sm:leading-6 hidden sm:block">
@@ -113,11 +113,11 @@ export default function Invitation() {
               >
                 <div className="relative w-full h-[220px] sm:h-[290px] md:h-[350px] flex items-end justify-center group overflow-hidden">
                   <div
-                    className="absolute inset-0 m-auto size-32 sm:size-48 rounded-full bg-gradient-to-br from-[#d8ad70]/30 via-[#a06a32]/20 to-transparent blur-2xl pointer-events-none"
+                    className="absolute inset-0 m-auto size-32 sm:size-48 rounded-full bg-linear-to-br from-[#d8ad70]/30 via-[#a06a32]/20 to-transparent blur-2xl pointer-events-none"
                     aria-hidden="true"
                   />
 
-                  <div className="absolute inset-x-1 sm:inset-x-3 top-2 bottom-0 rounded-t-full border border-[#d8ad70]/35 bg-gradient-to-b from-[#251d16]/35 via-[#15141b]/20 to-transparent pointer-events-none transition-colors group-hover:border-[#d8ad70]/65" />
+                  <div className="absolute inset-x-1 sm:inset-x-3 top-2 bottom-0 rounded-t-full border border-[#d8ad70]/35 bg-linear-to-b from-[#251d16]/35 via-[#15141b]/20 to-transparent pointer-events-none transition-colors group-hover:border-[#d8ad70]/65" />
 
                   <div className="relative w-full h-full overflow-hidden">
                     <Image
@@ -128,7 +128,7 @@ export default function Invitation() {
                       sizes="(max-width: 640px) 180px, (max-width: 768px) 260px, 340px"
                       className="object-contain object-bottom drop-shadow-[0_12px_28px_rgba(0,0,0,0.85)] scale-[1.25] sm:scale-[1.3] md:scale-[1.35] origin-bottom transition-all duration-500 group-hover:scale-[1.32] sm:group-hover:scale-[1.38] md:group-hover:scale-[1.42] group-hover:brightness-105"
                     />
-                    <div className="pointer-events-none absolute inset-x-0 bottom-0 h-6 sm:h-10 bg-gradient-to-t from-[#0e0f14] via-[#0e0f14]/80 to-transparent z-10" />
+                    <div className="pointer-events-none absolute inset-x-0 bottom-0 h-6 sm:h-10 bg-linear-to-t from-[#0e0f14] via-[#0e0f14]/80 to-transparent z-10" />
                   </div>
                 </div>
               </motion.div>

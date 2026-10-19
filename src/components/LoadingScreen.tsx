@@ -63,7 +63,7 @@ export default function LoadingScreen({ onComplete }: { onComplete: () => void }
             className="absolute -inset-3 rounded-full bg-[#d8ad70]/20 blur-xl pointer-events-none"
           />
 
-          <div className="relative grid size-20 sm:size-24 place-items-center rounded-full border border-[#f2d7a8]/60 bg-gradient-to-br from-[#2a2016] via-[#16141a] to-[#0a0a0e] shadow-[0_0_35px_rgba(216,173,112,0.35)]">
+          <div className="relative grid size-20 sm:size-24 place-items-center rounded-full border border-[#f2d7a8]/60 bg-linear-to-br from-[#2a2016] via-[#16141a] to-[#0a0a0e] shadow-[0_0_35px_rgba(216,173,112,0.35)]">
             <motion.div
               animate={{ y: [0, -3, 0] }}
               transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
@@ -93,7 +93,7 @@ export default function LoadingScreen({ onComplete }: { onComplete: () => void }
         <div className="mt-6 w-44 sm:w-56">
           <div className="relative h-1 w-full overflow-hidden rounded-full bg-white/10">
             <motion.div
-              className="h-full rounded-full bg-gradient-to-r from-[#b88647] via-[#f2d7a8] to-[#d8ad70]"
+              className="h-full rounded-full bg-linear-to-r from-[#b88647] via-[#f2d7a8] to-[#d8ad70]"
               style={{ width: `${progress}%` }}
               transition={{ ease: 'linear' }}
             />

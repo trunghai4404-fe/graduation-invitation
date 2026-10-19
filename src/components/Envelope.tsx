@@ -59,22 +59,22 @@ export default function Envelope({ onOpen }: Props) {
           whileHover={{ scale: 1.03, y: -4 }}
           whileTap={{ scale: 0.98 }}
           transition={{ type: 'spring', stiffness: 350, damping: 22 }}
-          className="envelope-glow-interactive relative aspect-[1.58/1] overflow-hidden rounded-sm border border-[#c69a5a]/85 bg-gradient-to-br from-[#2a221a] via-[#161519] to-[#0a0a0c]"
+          className="envelope-glow-interactive relative aspect-[1.58/1] overflow-hidden rounded-sm border border-[#c69a5a]/85 bg-linear-to-br from-[#2a221a] via-[#161519] to-[#0a0a0c]"
         >
           <div className="absolute inset-3 border border-[#b58a50]/30 transition-all duration-500 group-hover:border-[#e3bd7d]/60" />
 
-          <div className="absolute inset-x-0 top-0 h-[68%] origin-top bg-gradient-to-b from-[#4e3925] via-[#332418] to-[#1c1817] [clip-path:polygon(0_0,100%_0,50%_100%)] transition-all duration-500 group-hover:brightness-125" />
+          <div className="absolute inset-x-0 top-0 h-[68%] origin-top bg-linear-to-b from-[#4e3925] via-[#332418] to-[#1c1817] [clip-path:polygon(0_0,100%_0,50%_100%)] transition-all duration-500 group-hover:brightness-125" />
 
-          <div className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/10 to-transparent transition-transform duration-1000 group-hover:translate-x-full" />
+          <div className="pointer-events-none absolute inset-0 -translate-x-full bg-linear-to-r from-transparent via-white/10 to-transparent transition-transform duration-1000 group-hover:translate-x-full" />
 
-          <div className="absolute inset-0 [clip-path:polygon(0_100%,50%_42%,100%_100%)] bg-gradient-to-br from-[#2c221a] via-[#161416] to-[#342215]" />
-          <div className="absolute inset-0 [clip-path:polygon(0_0,50%_55%,0_100%)] bg-gradient-to-r from-[#312519] to-[#171416]" />
-          <div className="absolute inset-0 [clip-path:polygon(100%_0,50%_55%,100%_100%)] bg-gradient-to-l from-[#312519] to-[#171416]" />
+          <div className="absolute inset-0 [clip-path:polygon(0_100%,50%_42%,100%_100%)] bg-linear-to-br from-[#2c221a] via-[#161416] to-[#342215]" />
+          <div className="absolute inset-0 [clip-path:polygon(0_0,50%_55%,0_100%)] bg-linear-to-r from-[#312519] to-[#171416]" />
+          <div className="absolute inset-0 [clip-path:polygon(100%_0,50%_55%,100%_100%)] bg-linear-to-l from-[#312519] to-[#171416]" />
 
           <div className="absolute left-1/2 top-[53%] z-10 -translate-x-1/2 -translate-y-1/2">
             <span className="absolute -inset-2.5 rounded-full border border-[#f2d7a8]/70 animate-ping opacity-75" />
             <span className="absolute -inset-1 rounded-full bg-[#d8ad70]/30 blur-sm animate-pulse" />
-            <div className="relative grid size-14 sm:size-16 place-items-center rounded-full border-2 border-[#f2d7a8] bg-gradient-to-br from-[#f2d7a8] via-[#a8743c] to-[#3f2713] shadow-[0_0_35px_rgba(218,165,91,0.45)] transition-transform duration-300 group-hover:scale-110">
+            <div className="relative grid size-14 sm:size-16 place-items-center rounded-full border-2 border-[#f2d7a8] bg-linear-to-br from-[#f2d7a8] via-[#a8743c] to-[#3f2713] shadow-[0_0_35px_rgba(218,165,91,0.45)] transition-transform duration-300 group-hover:scale-110">
               <GraduationCap size={24} className="text-[#1a1209] sm:size-[26px]" strokeWidth={1.4} />
             </div>
           </div>
@@ -105,7 +105,7 @@ export default function Envelope({ onOpen }: Props) {
       <p className="mt-8 font-display text-lg italic text-white/45 sm:text-xl">
         A new chapter begins.
       </p>
-      <div className="mt-6 h-8 w-px bg-gradient-to-b from-[#cba66e]/70 to-transparent" />
+      <div className="mt-6 h-8 w-px bg-linear-to-b from-[#cba66e]/70 to-transparent" />
     </motion.section>
   );
 }
