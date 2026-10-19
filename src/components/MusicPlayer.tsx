@@ -3,13 +3,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Pause, Play, Volume2, VolumeX } from 'lucide-react';
 
-declare global {
-  interface Window {
-    __graduationAudio?: HTMLAudioElement | null;
-    __startGraduationMusic?: () => Promise<boolean>;
-  }
-}
-
 export default function MusicPlayer() {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [playing, setPlaying] = useState(false);
@@ -20,29 +13,34 @@ export default function MusicPlayer() {
     if (!audio) return;
 
     audio.volume = 0.7;
-    window.__graduationAudio = audio;
 
-    const tryPlay = async (): Promise<boolean> => {
+    const playAudio = async () => {
       try {
         await audio.play();
         setPlaying(true);
-        return true;
       } catch {
-        setPlaying(false);
-        return false;
       }
     };
 
-    window.__startGraduationMusic = tryPlay;
+    const events = [
+      'pointerdown',
+      'touchstart',
+      'mousedown',
+      'keydown',
+      'wheel',
+      'scroll',
+      'click',
+    ];
 
-    const events = ['pointerdown', 'touchstart', 'mousedown', 'keydown', 'click'];
     const unlockAndPlay = async () => {
-      const ok = await tryPlay();
-      if (ok) {
+      try {
+        await audio.play();
+        setPlaying(true);
         events.forEach((ev) => {
           window.removeEventListener(ev, unlockAndPlay, true);
           document.removeEventListener(ev, unlockAndPlay, true);
         });
+      } catch {
       }
     };
 
@@ -52,11 +50,13 @@ export default function MusicPlayer() {
     });
 
     const handleExternalPlay = () => {
-      tryPlay();
+      if (audio.paused) {
+        audio.play().then(() => setPlaying(true)).catch(() => {});
+      }
     };
     window.addEventListener('start-graduation-music', handleExternalPlay);
 
-    tryPlay();
+    playAudio();
 
     return () => {
       window.removeEventListener('start-graduation-music', handleExternalPlay);
@@ -64,8 +64,6 @@ export default function MusicPlayer() {
         window.removeEventListener(ev, unlockAndPlay, true);
         document.removeEventListener(ev, unlockAndPlay, true);
       });
-      delete window.__startGraduationMusic;
-      delete window.__graduationAudio;
     };
   }, []);
 

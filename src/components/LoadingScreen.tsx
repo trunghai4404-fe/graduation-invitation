@@ -1,24 +1,16 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { GraduationCap, Sparkles } from 'lucide-react';
 import { INVITATION_INFO } from '@/data/invitation';
 
 export default function LoadingScreen({ onComplete }: { onComplete: () => void }) {
   const [progress, setProgress] = useState(0);
-  const [needClick, setNeedClick] = useState(false);
-
-  const enterExperience = useCallback(async () => {
-    if (typeof window !== 'undefined' && window.__startGraduationMusic) {
-      await window.__startGraduationMusic();
-    }
-    onComplete();
-  }, [onComplete]);
 
   useEffect(() => {
     const startTime = performance.now();
-    const duration = 1200;
+    const duration = 1400;
 
     const interval = setInterval(() => {
       const elapsed = performance.now() - startTime;
@@ -27,19 +19,12 @@ export default function LoadingScreen({ onComplete }: { onComplete: () => void }
 
       if (nextProgress >= 100) {
         clearInterval(interval);
-        const checkAudio = async () => {
-          if (typeof window !== 'undefined' && window.__startGraduationMusic) {
-            const success = await window.__startGraduationMusic();
-            if (success) {
-              setTimeout(() => {
-                onComplete();
-              }, 200);
-              return;
-            }
+        setTimeout(() => {
+          if (typeof window !== 'undefined') {
+            window.dispatchEvent(new Event('start-graduation-music'));
           }
-          setNeedClick(true);
-        };
-        checkAudio();
+          onComplete();
+        }, 250);
       }
     }, 25);
 
@@ -51,12 +36,7 @@ export default function LoadingScreen({ onComplete }: { onComplete: () => void }
       initial={{ opacity: 1 }}
       exit={{ opacity: 0, scale: 1.04, filter: 'blur(12px)' }}
       transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-      onClick={() => {
-        if (needClick || progress >= 100) {
-          enterExperience();
-        }
-      }}
-      className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#05070e] text-center px-4 select-none cursor-pointer"
+      className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#05070e] text-center px-4 select-none"
     >
       <div
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_50%_45%,rgba(216,173,112,0.15),transparent_65%)]"
@@ -110,43 +90,20 @@ export default function LoadingScreen({ onComplete }: { onComplete: () => void }
           {INVITATION_INFO.name}
         </h2>
 
-        {!needClick ? (
-          <div className="mt-6 w-44 sm:w-56">
-            <div className="relative h-1 w-full overflow-hidden rounded-full bg-white/10">
-              <motion.div
-                className="h-full rounded-full bg-gradient-to-r from-[#b88647] via-[#f2d7a8] to-[#d8ad70]"
-                style={{ width: `${progress}%` }}
-                transition={{ ease: 'linear' }}
-              />
-            </div>
-
-            <div className="mt-2.5 flex items-center justify-between text-[9px] uppercase tracking-[0.2em] text-white/45">
-              <span>Đang chuẩn bị...</span>
-              <span className="font-medium text-[#f2d7a8]">{progress}%</span>
-            </div>
+        <div className="mt-6 w-44 sm:w-56">
+          <div className="relative h-1 w-full overflow-hidden rounded-full bg-white/10">
+            <motion.div
+              className="h-full rounded-full bg-gradient-to-r from-[#b88647] via-[#f2d7a8] to-[#d8ad70]"
+              style={{ width: `${progress}%` }}
+              transition={{ ease: 'linear' }}
+            />
           </div>
-        ) : (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.92, y: 8 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
-            className="mt-6 flex flex-col items-center"
-          >
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                enterExperience();
-              }}
-              className="gold-button inline-flex items-center gap-2 rounded-full px-7 py-2.5 text-[11px] font-semibold uppercase tracking-[0.25em] shadow-[0_0_30px_rgba(216,173,112,0.45)] hover:scale-105 active:scale-95 transition-all"
-            >
-              Vào xem thiệp
-              <Sparkles size={14} className="text-[#f2d7a8]" />
-            </button>
-            <p className="mt-2 text-[9px] uppercase tracking-[0.2em] text-white/40 animate-pulse">
-              Chạm để bật nhạc & xem phong bì
-            </p>
-          </motion.div>
-        )}
+
+          <div className="mt-2.5 flex items-center justify-between text-[9px] uppercase tracking-[0.2em] text-white/45">
+            <span>Đang tải...</span>
+            <span className="font-medium text-[#f2d7a8]">{progress}%</span>
+          </div>
+        </div>
       </div>
     </motion.div>
   );
