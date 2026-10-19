@@ -3,6 +3,13 @@
 import { useEffect, useRef, useState } from 'react';
 import { Pause, Play, Volume2, VolumeX } from 'lucide-react';
 
+declare global {
+  interface Window {
+    __graduationAudio?: HTMLAudioElement | null;
+    __startGraduationMusic?: () => Promise<boolean>;
+  }
+}
+
 export default function MusicPlayer() {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [playing, setPlaying] = useState(false);
@@ -13,52 +20,52 @@ export default function MusicPlayer() {
     if (!audio) return;
 
     audio.volume = 0.7;
+    window.__graduationAudio = audio;
 
-    const playAudio = async () => {
+    const tryPlay = async (): Promise<boolean> => {
       try {
         await audio.play();
         setPlaying(true);
+        return true;
       } catch {
-        const events = [
-          'pointerdown',
-          'touchstart',
-          'mousedown',
-          'keydown',
-          'wheel',
-          'scroll',
-          'click',
-        ];
+        setPlaying(false);
+        return false;
+      }
+    };
 
-        const unlockAndPlay = async () => {
-          try {
-            await audio.play();
-            setPlaying(true);
-            events.forEach((ev) => {
-              window.removeEventListener(ev, unlockAndPlay, true);
-              document.removeEventListener(ev, unlockAndPlay, true);
-            });
-          } catch {
-          }
-        };
+    window.__startGraduationMusic = tryPlay;
 
+    const events = ['pointerdown', 'touchstart', 'mousedown', 'keydown', 'click'];
+    const unlockAndPlay = async () => {
+      const ok = await tryPlay();
+      if (ok) {
         events.forEach((ev) => {
-          window.addEventListener(ev, unlockAndPlay, { capture: true, passive: true });
-          document.addEventListener(ev, unlockAndPlay, { capture: true, passive: true });
+          window.removeEventListener(ev, unlockAndPlay, true);
+          document.removeEventListener(ev, unlockAndPlay, true);
         });
       }
     };
 
+    events.forEach((ev) => {
+      window.addEventListener(ev, unlockAndPlay, { capture: true, passive: true });
+      document.addEventListener(ev, unlockAndPlay, { capture: true, passive: true });
+    });
+
     const handleExternalPlay = () => {
-      if (audio.paused) {
-        audio.play().then(() => setPlaying(true)).catch(() => {});
-      }
+      tryPlay();
     };
     window.addEventListener('start-graduation-music', handleExternalPlay);
 
-    playAudio();
+    tryPlay();
 
     return () => {
       window.removeEventListener('start-graduation-music', handleExternalPlay);
+      events.forEach((ev) => {
+        window.removeEventListener(ev, unlockAndPlay, true);
+        document.removeEventListener(ev, unlockAndPlay, true);
+      });
+      delete window.__startGraduationMusic;
+      delete window.__graduationAudio;
     };
   }, []);
 
