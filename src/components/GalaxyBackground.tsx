@@ -17,7 +17,7 @@ export default function GalaxyBackground() {
       0.1,
       1000
     );
-    camera.position.set(0, 0, 26);
+    camera.position.set(0, 0, 24);
 
     const renderer = new THREE.WebGLRenderer({
       alpha: true,
@@ -32,137 +32,119 @@ export default function GalaxyBackground() {
     const mainGroup = new THREE.Group();
     scene.add(mainGroup);
 
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.95);
-    scene.add(ambientLight);
+    const createGlowTexture = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = 64;
+      canvas.height = 64;
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        const gradient = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+        gradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
+        gradient.addColorStop(0.2, 'rgba(245, 225, 185, 0.9)');
+        gradient.addColorStop(0.5, 'rgba(216, 173, 112, 0.35)');
+        gradient.addColorStop(0.85, 'rgba(160, 110, 50, 0.08)');
+        gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, 64, 64);
+      }
+      return new THREE.CanvasTexture(canvas);
+    };
 
-    const pointLight = new THREE.PointLight(0x00e5ff, 2, 60);
-    pointLight.position.set(12, 10, 15);
-    scene.add(pointLight);
+    const glowTexture = createGlowTexture();
 
-    const pointLight2 = new THREE.PointLight(0xa855f7, 1.8, 60);
-    pointLight2.position.set(-14, -8, 10);
-    scene.add(pointLight2);
+    const bokehCount = window.innerWidth < 768 ? 28 : 50;
+    const bokehGeometry = new THREE.BufferGeometry();
+    const bokehPositions = new Float32Array(bokehCount * 3);
+    const bokehColors = new Float32Array(bokehCount * 3);
+    const bokehScales = new Float32Array(bokehCount);
 
-    const cubeColors = [
-      new THREE.Color('#00d4ff'),
-      new THREE.Color('#0284c7'),
-      new THREE.Color('#38bdf8'),
-      new THREE.Color('#2563eb'),
-      new THREE.Color('#6366f1'),
-      new THREE.Color('#8b5cf6'),
-      new THREE.Color('#a855f7'),
+    const bokehPalette = [
+      new THREE.Color('#fff6e6'),
+      new THREE.Color('#f5e1b8'),
+      new THREE.Color('#e6c285'),
       new THREE.Color('#d8ad70'),
-      new THREE.Color('#ffffff'),
+      new THREE.Color('#b88647'),
+      new THREE.Color('#ffd194'),
     ];
 
-    const cubeCount = window.innerWidth < 768 ? 32 : 65;
-    const boxGeometry = new THREE.BoxGeometry(0.24, 0.24, 0.24);
-    const boxMaterial = new THREE.MeshStandardMaterial({
-      roughness: 0.3,
-      metalness: 0.8,
-      transparent: true,
-      opacity: 0.85,
-    });
-
-    const instancedCubes = new THREE.InstancedMesh(boxGeometry, boxMaterial, cubeCount);
-    instancedCubes.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
-
-    const dummy = new THREE.Object3D();
-    const cubeData: {
-      x: number;
-      y: number;
-      z: number;
-      rotX: number;
-      rotY: number;
-      rotZ: number;
-      speedRotX: number;
-      speedRotY: number;
-      floatSpeed: number;
-      floatOffset: number;
-      scale: number;
+    const bokehData: {
+      baseX: number;
+      baseY: number;
+      baseZ: number;
+      speedY: number;
+      swaySpeed: number;
+      swayRadius: number;
+      swayOffset: number;
+      boundsY: number;
     }[] = [];
 
-    for (let i = 0; i < cubeCount; i++) {
-      let x = (Math.random() - 0.5) * 44;
-      let y = (Math.random() - 0.5) * 32;
-      const z = (Math.random() - 0.5) * 30;
+    for (let i = 0; i < bokehCount; i++) {
+      const i3 = i * 3;
+      let x = (Math.random() - 0.5) * 40;
+      let y = (Math.random() - 0.5) * 30;
+      const z = (Math.random() - 0.5) * 22;
 
-      if (Math.abs(x) < 7 && Math.abs(y) < 8) {
-        x += (x >= 0 ? 1 : -1) * (8 + Math.random() * 8);
+      if (Math.abs(x) < 6 && Math.abs(y) < 7) {
+        x += (x >= 0 ? 1 : -1) * (7 + Math.random() * 8);
       }
 
-      const scale = 0.5 + Math.random() * 0.9;
-      const rotX = Math.random() * Math.PI * 2;
-      const rotY = Math.random() * Math.PI * 2;
-      const rotZ = Math.random() * Math.PI * 2;
+      bokehPositions[i3] = x;
+      bokehPositions[i3 + 1] = y;
+      bokehPositions[i3 + 2] = z;
 
-      cubeData.push({
-        x,
-        y,
-        z,
-        rotX,
-        rotY,
-        rotZ,
-        speedRotX: (Math.random() - 0.5) * 0.012,
-        speedRotY: (Math.random() - 0.5) * 0.012,
-        floatSpeed: 0.4 + Math.random() * 0.9,
-        floatOffset: Math.random() * Math.PI * 2,
-        scale,
+      const c = bokehPalette[Math.floor(Math.random() * bokehPalette.length)];
+      bokehColors[i3] = c.r;
+      bokehColors[i3 + 1] = c.g;
+      bokehColors[i3 + 2] = c.b;
+
+      bokehScales[i] = 0.8 + Math.random() * 1.6;
+
+      bokehData.push({
+        baseX: x,
+        baseY: y,
+        baseZ: z,
+        speedY: 0.2 + Math.random() * 0.45,
+        swaySpeed: 0.6 + Math.random() * 1.2,
+        swayRadius: 0.4 + Math.random() * 1.0,
+        swayOffset: Math.random() * Math.PI * 2,
+        boundsY: 18,
       });
-
-      const color = cubeColors[Math.floor(Math.random() * cubeColors.length)];
-      instancedCubes.setColorAt(i, color);
     }
 
-    if (instancedCubes.instanceColor) {
-      instancedCubes.instanceColor.needsUpdate = true;
-    }
-    mainGroup.add(instancedCubes);
+    bokehGeometry.setAttribute('position', new THREE.BufferAttribute(bokehPositions, 3));
+    bokehGeometry.setAttribute('color', new THREE.BufferAttribute(bokehColors, 3));
 
-    const ringGeometry1 = new THREE.TorusGeometry(3.0, 0.05, 16, 80);
-    const ringMaterial1 = new THREE.MeshBasicMaterial({
-      color: 0x00d4ff,
+    const bokehMaterial = new THREE.PointsMaterial({
+      size: 1.4,
+      sizeAttenuation: true,
+      map: glowTexture,
       transparent: true,
-      opacity: 0.6,
-      wireframe: true,
+      opacity: 0.85,
+      vertexColors: true,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
     });
-    const ring1 = new THREE.Mesh(ringGeometry1, ringMaterial1);
-    ring1.position.set(14, 3, -6);
-    ring1.rotation.x = 1.1;
-    ring1.rotation.y = 0.5;
-    mainGroup.add(ring1);
 
-    const ringGeometry2 = new THREE.TorusGeometry(3.6, 0.04, 16, 80);
-    const ringMaterial2 = new THREE.MeshBasicMaterial({
-      color: 0x6366f1,
-      transparent: true,
-      opacity: 0.4,
-      wireframe: true,
-    });
-    const ring2 = new THREE.Mesh(ringGeometry2, ringMaterial2);
-    ring2.position.set(-15, -6, -12);
-    ring2.rotation.x = 0.8;
-    ring2.rotation.y = -0.4;
-    mainGroup.add(ring2);
+    const bokehPoints = new THREE.Points(bokehGeometry, bokehMaterial);
+    mainGroup.add(bokehPoints);
 
-    const dustCount = window.innerWidth < 768 ? 120 : 280;
+    const dustCount = window.innerWidth < 768 ? 450 : 900;
     const dustGeometry = new THREE.BufferGeometry();
     const dustPositions = new Float32Array(dustCount * 3);
     const dustColors = new Float32Array(dustCount * 3);
 
-    const palette = [
-      new THREE.Color('#38bdf8'),
-      new THREE.Color('#00d4ff'),
-      new THREE.Color('#818cf8'),
-      new THREE.Color('#c084fc'),
-      new THREE.Color('#f2d7a8'),
-      new THREE.Color('#ffffff'),
+    const dustPalette = [
+      new THREE.Color('#fff9ed'),
+      new THREE.Color('#f5dfb8'),
+      new THREE.Color('#e0b878'),
+      new THREE.Color('#c99852'),
+      new THREE.Color('#ffdca8'),
     ];
 
     for (let i = 0; i < dustCount; i++) {
       const i3 = i * 3;
       let x = (Math.random() - 0.5) * 55;
-      let y = (Math.random() - 0.5) * 40;
+      let y = (Math.random() - 0.5) * 45;
       const z = (Math.random() - 0.5) * 40;
 
       if (Math.abs(x) < 5 && Math.abs(y) < 6) {
@@ -173,7 +155,7 @@ export default function GalaxyBackground() {
       dustPositions[i3 + 1] = y;
       dustPositions[i3 + 2] = z;
 
-      const c = palette[Math.floor(Math.random() * palette.length)];
+      const c = dustPalette[Math.floor(Math.random() * dustPalette.length)];
       dustColors[i3] = c.r;
       dustColors[i3 + 1] = c.g;
       dustColors[i3 + 2] = c.b;
@@ -183,16 +165,40 @@ export default function GalaxyBackground() {
     dustGeometry.setAttribute('color', new THREE.BufferAttribute(dustColors, 3));
 
     const dustMaterial = new THREE.PointsMaterial({
-      size: 0.08,
+      size: 0.35,
       sizeAttenuation: true,
-      vertexColors: true,
+      map: glowTexture,
       transparent: true,
       opacity: 0.75,
+      vertexColors: true,
       blending: THREE.AdditiveBlending,
+      depthWrite: false,
     });
 
     const dustPoints = new THREE.Points(dustGeometry, dustMaterial);
     mainGroup.add(dustPoints);
+
+    const celestialRingGeo = new THREE.TorusGeometry(15, 0.025, 16, 120);
+    const celestialRingMat = new THREE.MeshBasicMaterial({
+      color: 0xd8ad70,
+      transparent: true,
+      opacity: 0.22,
+    });
+    const celestialRing = new THREE.Mesh(celestialRingGeo, celestialRingMat);
+    celestialRing.rotation.x = Math.PI * 0.38;
+    celestialRing.rotation.y = Math.PI * 0.15;
+    mainGroup.add(celestialRing);
+
+    const celestialRingGeo2 = new THREE.TorusGeometry(18, 0.015, 16, 120);
+    const celestialRingMat2 = new THREE.MeshBasicMaterial({
+      color: 0xf2d7a8,
+      transparent: true,
+      opacity: 0.14,
+    });
+    const celestialRing2 = new THREE.Mesh(celestialRingGeo2, celestialRingMat2);
+    celestialRing2.rotation.x = -Math.PI * 0.32;
+    celestialRing2.rotation.z = Math.PI * 0.2;
+    mainGroup.add(celestialRing2);
 
     let mouseX = 0;
     let mouseY = 0;
@@ -216,11 +222,11 @@ export default function GalaxyBackground() {
       const normX = (clientX / window.innerWidth - 0.5) * 2;
       const normY = (clientY / window.innerHeight - 0.5) * 2;
 
-      targetCameraX = normX * 4.5;
-      targetCameraY = -normY * 3.5;
+      targetCameraX = normX * 4.0;
+      targetCameraY = -normY * 3.0;
 
-      targetRotationY = normX * 0.22;
-      targetRotationX = normY * 0.18;
+      targetRotationY = normX * 0.18;
+      targetRotationX = normY * 0.14;
     };
 
     window.addEventListener('mousemove', onPointerMove, { passive: true });
@@ -240,36 +246,32 @@ export default function GalaxyBackground() {
     const animate = () => {
       const elapsed = clock.getElapsedTime();
 
-      camera.position.x += (targetCameraX - camera.position.x) * 0.04;
-      camera.position.y += (targetCameraY - camera.position.y) * 0.04;
+      camera.position.x += (targetCameraX - camera.position.x) * 0.045;
+      camera.position.y += (targetCameraY - camera.position.y) * 0.045;
       camera.lookAt(0, 0, 0);
 
-      mainGroup.rotation.y += (targetRotationY - mainGroup.rotation.y) * 0.04 + 0.0006;
-      mainGroup.rotation.x += (targetRotationX - mainGroup.rotation.x) * 0.04;
+      mainGroup.rotation.y += (targetRotationY - mainGroup.rotation.y) * 0.035 + 0.0004;
+      mainGroup.rotation.x += (targetRotationX - mainGroup.rotation.x) * 0.035;
 
-      ring1.rotation.x += 0.005;
-      ring1.rotation.y += 0.007;
+      celestialRing.rotation.z = elapsed * 0.015;
+      celestialRing2.rotation.z = -elapsed * 0.012;
 
-      ring2.rotation.x += 0.004;
-      ring2.rotation.z += 0.005;
+      const posArray = bokehGeometry.attributes.position.array as Float32Array;
+      for (let i = 0; i < bokehCount; i++) {
+        const item = bokehData[i];
+        const i3 = i * 3;
 
-      for (let i = 0; i < cubeCount; i++) {
-        const item = cubeData[i];
-        item.rotX += item.speedRotX;
-        item.rotY += item.speedRotY;
+        let curY = posArray[i3 + 1] + item.speedY * 0.025;
+        if (curY > item.boundsY) {
+          curY = -item.boundsY;
+        }
+        posArray[i3 + 1] = curY;
 
-        const currentY = item.y + Math.sin(elapsed * item.floatSpeed + item.floatOffset) * 0.35;
-
-        dummy.position.set(item.x, currentY, item.z);
-        dummy.rotation.set(item.rotX, item.rotY, item.rotZ);
-        dummy.scale.set(item.scale, item.scale, item.scale);
-        dummy.updateMatrix();
-
-        instancedCubes.setMatrixAt(i, dummy.matrix);
+        posArray[i3] = item.baseX + Math.sin(elapsed * item.swaySpeed + item.swayOffset) * item.swayRadius;
       }
-      instancedCubes.instanceMatrix.needsUpdate = true;
+      bokehGeometry.attributes.position.needsUpdate = true;
 
-      dustPoints.rotation.y = elapsed * 0.012;
+      dustPoints.rotation.y = elapsed * 0.008;
 
       renderer.render(scene, camera);
       animationFrameId = requestAnimationFrame(animate);
@@ -283,14 +285,15 @@ export default function GalaxyBackground() {
       window.removeEventListener('touchmove', onPointerMove);
       window.removeEventListener('resize', handleResize);
 
-      boxGeometry.dispose();
-      boxMaterial.dispose();
-      ringGeometry1.dispose();
-      ringMaterial1.dispose();
-      ringGeometry2.dispose();
-      ringMaterial2.dispose();
+      bokehGeometry.dispose();
+      bokehMaterial.dispose();
       dustGeometry.dispose();
       dustMaterial.dispose();
+      celestialRingGeo.dispose();
+      celestialRingMat.dispose();
+      celestialRingGeo2.dispose();
+      celestialRingMat2.dispose();
+      glowTexture.dispose();
       renderer.dispose();
 
       if (container.contains(renderer.domElement)) {
