@@ -42,9 +42,9 @@ export default function Invitation() {
   return (
     <motion.section
       key="invitation"
-      initial={{ opacity: 0, y: 35, filter: 'blur(8px)' }}
-      animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-      transition={{ duration: 0.85, ease: 'easeOut' }}
+      initial={{ opacity: 0, scale: 0.91, y: 28 }}
+      animate={{ opacity: 1, scale: 1, y: 0 }}
+      transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
       className="relative z-10 mx-auto w-full max-w-4xl px-3 py-4 sm:px-6 sm:py-8 md:py-10"
     >
       <div className="relative overflow-hidden rounded-xl border border-[#c79c61]/50 bg-[#0d0e14]/92 p-2 sm:p-3 shadow-[0_30px_100px_rgba(0,0,0,0.85)] backdrop-blur-md">

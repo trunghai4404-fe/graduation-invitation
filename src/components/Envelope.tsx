@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { GraduationCap, Sparkles } from 'lucide-react';
 import { INVITATION_INFO } from '@/data/invitation';
@@ -7,12 +8,27 @@ import { INVITATION_INFO } from '@/data/invitation';
 type Props = { onOpen: () => void };
 
 export default function Envelope({ onOpen }: Props) {
+  const [phase, setPhase] = useState<'idle' | 'opening'>('idle');
+
+  const handleOpen = () => {
+    if (phase !== 'idle') return;
+    setPhase('opening');
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new Event('start-graduation-music'));
+    }
+    setTimeout(() => onOpen(), 2300);
+  };
+
   return (
     <motion.section
       key="envelope"
       initial={{ opacity: 0, y: 24 }}
       animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, scale: 0.9, filter: 'blur(10px)', transition: { duration: 0.6 } }}
+      exit={
+        phase === 'opening'
+          ? { opacity: 0, transition: { duration: 0.2 } }
+          : { opacity: 0, scale: 0.9, filter: 'blur(10px)', transition: { duration: 0.6 } }
+      }
       transition={{ duration: 0.7 }}
       className="relative z-10 mx-auto flex min-h-[calc(100svh-110px)] w-full max-w-4xl flex-col items-center justify-center px-4 py-8 text-center"
     >
@@ -37,33 +53,78 @@ export default function Envelope({ onOpen }: Props) {
       <div
         role="button"
         tabIndex={0}
-        onClick={() => {
-          if (typeof window !== 'undefined') {
-            window.dispatchEvent(new Event('start-graduation-music'));
-          }
-          onOpen();
-        }}
+        onClick={handleOpen}
         onKeyDown={(e) => {
           if (e.key === 'Enter' || e.key === ' ') {
             e.preventDefault();
-            if (typeof window !== 'undefined') {
-              window.dispatchEvent(new Event('start-graduation-music'));
-            }
-            onOpen();
+            handleOpen();
           }
         }}
         aria-label="Nhấn để mở phong bì thiệp mời tốt nghiệp"
         className="group relative mt-9 w-full max-w-[390px] cursor-pointer select-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-8 focus-visible:outline-[#e2bc81]"
       >
+        {/* ── Letter card – rises from within the envelope ── */}
+        {phase === 'opening' && (
+          <motion.div
+            initial={{ y: '0%', opacity: 0, scale: 0.95 }}
+            animate={{
+              y: ['0%', '-78%', '-78%', '-220%'],
+              opacity: [0, 1, 1, 0],
+              scale: [0.95, 1, 1, 2.5],
+            }}
+            transition={{
+              duration: 2.5,
+              times: [0, 0.32, 0.65, 1],
+              ease: 'easeOut',
+            }}
+            className="pointer-events-none absolute inset-x-3 bottom-0 z-10 flex flex-col items-center justify-center gap-2 rounded-xl border border-[#c8903e]/45"
+            style={{
+              height: '100%',
+              background: 'linear-gradient(160deg, #fdf6e8 0%, #f4e2b8 50%, #e0b96a 100%)',
+              boxShadow:
+                '0 -30px 80px rgba(216,173,112,0.55), 0 20px 50px rgba(0,0,0,0.85)',
+            }}
+          >
+            <Sparkles size={20} className="text-[#9a6b28]" />
+            <p className="font-display text-xl italic text-[#4e3010]">
+              Lễ Tốt Nghiệp
+            </p>
+            <div
+              style={{
+                height: '1px',
+                width: '40px',
+                background: 'linear-gradient(90deg, transparent, #c8903e, transparent)',
+              }}
+            />
+            <p className="text-[8px] uppercase tracking-[0.28em] text-[#7a5028]/90">
+              {INVITATION_INFO.name}
+            </p>
+            <p className="text-[7px] uppercase tracking-[0.2em] text-[#9a7040]/70">
+              Class of 2026
+            </p>
+          </motion.div>
+        )}
+
+        {/* ── Envelope card ── */}
         <motion.div
-          whileHover={{ scale: 1.03, y: -4 }}
-          whileTap={{ scale: 0.98 }}
-          transition={{ type: 'spring', stiffness: 350, damping: 22 }}
-          className="envelope-glow-interactive relative aspect-[1.58/1] overflow-hidden rounded-sm border border-[#c69a5a]/85 bg-linear-to-br from-[#2a221a] via-[#161519] to-[#0a0a0c]"
+          whileHover={phase === 'idle' ? { scale: 1.03, y: -4 } : {}}
+          whileTap={phase === 'idle' ? { scale: 0.98 } : {}}
+          animate={phase === 'opening' ? { scale: 0.97, y: 5 } : {}}
+          transition={
+            phase === 'opening'
+              ? { duration: 0.4, ease: 'easeIn' }
+              : { type: 'spring', stiffness: 350, damping: 22 }
+          }
+          className="envelope-glow-interactive relative z-20 aspect-[1.58/1] overflow-hidden rounded-sm border border-[#c69a5a]/85 bg-linear-to-br from-[#2a221a] via-[#161519] to-[#0a0a0c]"
         >
           <div className="absolute inset-3 border border-[#b58a50]/30 transition-all duration-500 group-hover:border-[#e3bd7d]/60" />
 
-          <div className="absolute inset-x-0 top-0 h-[68%] origin-top bg-linear-to-b from-[#4e3925] via-[#332418] to-[#1c1817] [clip-path:polygon(0_0,100%_0,50%_100%)] transition-all duration-500 group-hover:brightness-125" />
+          {/* Envelope flap – fades up when opening */}
+          <motion.div
+            className="absolute inset-x-0 top-0 h-[68%] origin-top bg-linear-to-b from-[#4e3925] via-[#332418] to-[#1c1817] [clip-path:polygon(0_0,100%_0,50%_100%)] duration-500 group-hover:brightness-125"
+            animate={phase === 'opening' ? { opacity: 0, y: '-14%' } : {}}
+            transition={{ duration: 0.38, ease: 'easeIn' }}
+          />
 
           <div className="pointer-events-none absolute inset-0 -translate-x-full bg-linear-to-r from-transparent via-white/10 to-transparent transition-transform duration-1000 group-hover:translate-x-full" />
 

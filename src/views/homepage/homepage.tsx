@@ -9,6 +9,7 @@ import Envelope from '@/components/Envelope';
 import Invitation from '@/components/Invitation';
 import MusicPlayer from '@/components/MusicPlayer';
 import LoadingScreen from '@/components/LoadingScreen';
+import Countdown from '@/components/Countdown';
 import { INVITATION_INFO } from '@/data/invitation';
 
 const GalaxyBackground = dynamic(() => import('@/components/GalaxyBackground'), {
@@ -94,6 +95,7 @@ export default function Homepage() {
               transition={{ delay: 0.6, duration: 0.7 }}
               className="relative z-10"
             >
+              <Countdown />
               <section className="relative mx-auto max-w-2xl px-5 pb-24 pt-4 text-center">
                 <Sparkles size={22} className="mx-auto mb-4 text-[#d8ad70]" />
                 <p className="font-display gold-text text-4xl italic sm:text-6xl">
